@@ -1,0 +1,48 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: sansar_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  app:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user:pass@db/sansar_db
+
+  celery:
+    build: .
+    command: celery -A main.celery worker --loglevel=info
+    depends_on:
+      - redis
+      - app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user:pass@db/sansar_db
+
+  celery-beat:
+    build: .
+    command: celery -A main.celery beat --loglevel=info
+    depends_on:
+      - redis
+      - app
+
+volumes:
+  postgres_data:
