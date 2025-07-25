@@ -1,8 +1,8 @@
 # models.py
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, TIMESTAMP, JSON, CheckConstraint, Interval
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, TIMESTAMP, JSON, CheckConstraint, Interval, Computed
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql import func
-from datetime import datetime
+# from datetime import datetime # Эта строка не используется в текущем коде, можно удалить
 
 Base = declarative_base()
 
@@ -30,7 +30,7 @@ class User(Base):
     military_office_id = Column(Integer, ForeignKey("military_offices.id"))
     phone_number = Column(String(20))
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
-    updated_at = Column(TIMESTAMP, server_default=func.current_timestamp())
+    updated_at = Column(TIMESTAMP, server_default=func.current_timestamp(), onupdate=func.current_timestamp()) # Добавлен onupdate
     secret_2fa = Column(String(32))  # For 2FA
     role = relationship("Role")
     military_office = relationship("MilitaryOffice")
@@ -53,7 +53,8 @@ class AlertStatus(Base):
     received_at = Column(TIMESTAMP)
     accepted_at = Column(TIMESTAMP)
     ready_at = Column(TIMESTAMP)
-    total_time = Column(Interval, server_generated=True, computed="(ready_at - received_at)")
+    # Исправлено: использование Computed для создания вычисляемого столбца
+    total_time = Column(Interval, Computed("(ready_at - received_at)"))
 
 class EventsPS(Base):
     __tablename__ = "events_ps"

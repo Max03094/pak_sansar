@@ -9,7 +9,7 @@ from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import JWTStrategy, AuthenticationBackend
 from fastapi_users.db import SQLAlchemyUserDatabase
 from .models import User, Base
-from .schemas import UserCreate, UserRead, UserUpdate
+from .schemas import UserCreate, User, UserUpdate
 from .dependencies import get_db_session
 from .routers import alerts_router, users_router, roles_router, military_offices_router, notifications_router, events_ps_router, employees_router, conscripts_router, requests_router, devices_router, video_router, skud_router, audio_router, reports_router
 from .websocket import websocket_router

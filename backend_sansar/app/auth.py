@@ -1,9 +1,13 @@
 # auth.py
 from fastapi_users import BaseUserManager, IntegerIDMixin
 from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users.authentication import JWTStrategy
 from .models import User
 from secrets import token_hex
 import pyotp
+# Добавлены недостающие импорты
+from typing import Optional
+from fastapi import Request, Depends
 
 SECRET_KEY = token_hex(32)
 
